@@ -7,10 +7,12 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,13 +21,17 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    Spinner spinner;
+    TextView textView;
+    Spinner spinner,spinner2;
+
     ArrayList<String> cList=new ArrayList<>();
+    ArrayList<String> cList2=new ArrayList<>();
     JSONArray T=null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        textView=findViewById(R.id.txt);
 
         try {
             InputStream inputS=getResources().getAssets().open("produits.json");
@@ -40,12 +46,35 @@ public class MainActivity extends AppCompatActivity {
             inputS.close();
             String data=sb.toString();
 
+
             T=new JSONArray(data);
             if(T!=null){
                 for(int i=0; i<T.length();i++){
                     cList.add(T.getJSONObject(i).getString("nom"));
                 }
             }
+
+
+            //2em spinnner
+
+            InputStream stream=getResources().getAssets().open("produits2.json");
+            int size=stream.available();
+            byte[] byteData=new byte[size];
+            stream.read(byteData);
+            stream.close();
+            String Data=new String(byteData,"UTF-8");
+
+            JSONObject JO=new JSONObject(Data);
+            if(JO!=null){
+                JSONArray T2=JO.getJSONArray("produits");
+                for(int i=0;i<T2.length();i++){
+                    cList2.add(T2.getJSONObject(i).getString("nom"));
+                }
+            }
+            spinner2=findViewById(R.id.spinner2);
+            ArrayAdapter<String> adapter2=new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,cList2);
+            spinner2.setAdapter(adapter2);
+
 
 
         } catch (IOException | JSONException e) {
